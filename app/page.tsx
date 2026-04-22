@@ -16,6 +16,10 @@ type Subscription = {
 
 const STORAGE_KEY = "subtrack:subscriptions:v1";
 
+/** 選填：頁尾／說明視窗的對外連結（例如官網、表單）。勿硬編 GitHub 個人帳號網址。 */
+const MORE_INFO_URL =
+  process.env.NEXT_PUBLIC_MORE_INFO_URL?.trim() ?? "";
+
 const CATEGORIES: Category[] = ["娛樂", "音樂", "工作", "健康"];
 
 const CATEGORY_STYLES: Record<
@@ -148,6 +152,7 @@ export default function Home() {
   const [filter, setFilter] = useState<FilterOption>("全部");
   const [isAdding, setIsAdding] = useState(false);
   const [editingSub, setEditingSub] = useState<Subscription | null>(null);
+  const [showVisitorInfo, setShowVisitorInfo] = useState(false);
 
   useEffect(() => {
     try {
@@ -291,7 +296,10 @@ export default function Home() {
   return (
     <div className="flex-1 w-full">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <Header onAdd={() => setIsAdding(true)} />
+        <Header
+          onAdd={() => setIsAdding(true)}
+          onShowInfo={() => setShowVisitorInfo(true)}
+        />
 
         <section className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatCard
@@ -399,8 +407,32 @@ export default function Home() {
           </section>
         </div>
 
-        <footer className="mt-10 py-6 text-center text-xs text-slate-400">
-          Subtrack · 讓你的每一筆訂閱都看得見 ✨
+        <footer className="mt-10 border-t border-slate-200/80 py-8 text-center text-xs text-slate-500">
+          <p className="font-medium text-slate-600">
+            Subtrack · 讓你的每一筆訂閱都看得見 ✨
+          </p>
+          <p className="mx-auto mt-3 max-w-lg leading-relaxed">
+            你的訂閱清單與金額只存在這台裝置的瀏覽器裡，沒有登入帳號，我們也不會把清單存進伺服器資料庫。清除網站資料、換瀏覽器或換手機後需自行重新建立。
+          </p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            <button
+              type="button"
+              onClick={() => setShowVisitorInfo(true)}
+              className="font-semibold text-indigo-600 underline decoration-indigo-300 underline-offset-2 hover:text-indigo-700"
+            >
+              使用說明與隱私
+            </button>
+            {MORE_INFO_URL ? (
+              <a
+                href={MORE_INFO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-slate-600 underline decoration-slate-300 underline-offset-2 hover:text-slate-900"
+              >
+                更多資訊
+              </a>
+            ) : null}
+          </div>
         </footer>
       </div>
 
@@ -419,13 +451,26 @@ export default function Home() {
           }
         />
       )}
+
+      {showVisitorInfo && (
+        <VisitorInfoModal
+          onClose={() => setShowVisitorInfo(false)}
+          moreInfoUrl={MORE_INFO_URL}
+        />
+      )}
     </div>
   );
 }
 
-function Header({ onAdd }: { onAdd: () => void }) {
+function Header({
+  onAdd,
+  onShowInfo,
+}: {
+  onAdd: () => void;
+  onShowInfo: () => void;
+}) {
   return (
-    <header className="flex items-center justify-between">
+    <header className="flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-xl shadow-lg shadow-indigo-200">
           <span className="drop-shadow-sm">💳</span>
@@ -434,16 +479,26 @@ function Header({ onAdd }: { onAdd: () => void }) {
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
             Subtrack
           </h1>
-          <p className="text-xs text-slate-500">訂閱管理儀表板</p>
+          <p className="text-xs text-slate-500">訂閱管理儀表板 · 免費使用</p>
         </div>
       </div>
-      <button
-        onClick={onAdd}
-        className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:from-indigo-600 hover:to-purple-600 active:scale-95"
-      >
-        <span className="text-lg leading-none">＋</span>
-        新增訂閱
-      </button>
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <button
+          type="button"
+          onClick={onShowInfo}
+          className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+        >
+          使用說明
+        </button>
+        <button
+          type="button"
+          onClick={onAdd}
+          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:from-indigo-600 hover:to-purple-600 active:scale-95"
+        >
+          <span className="text-lg leading-none">＋</span>
+          新增訂閱
+        </button>
+      </div>
     </header>
   );
 }
@@ -781,6 +836,118 @@ function Timeline({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function VisitorInfoModal({
+  onClose,
+  moreInfoUrl,
+}: {
+  onClose: () => void;
+  moreInfoUrl: string;
+}) {
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="visitor-info-title"
+    >
+      <div
+        className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <h2
+            id="visitor-info-title"
+            className="text-xl font-bold text-slate-900"
+          >
+            給使用者的說明
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="關閉"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="mt-5 space-y-5 text-sm leading-relaxed text-slate-600">
+          <section>
+            <h3 className="font-bold text-slate-900">Subtrack 是什麼？</h3>
+            <p className="mt-2">
+              用來整理訂閱服務名稱、金額、週期與下次扣款日的儀表板，方便估算每月與每年大概花多少。
+            </p>
+          </section>
+          <section>
+            <h3 className="font-bold text-slate-900">資料與隱私</h3>
+            <ul className="mt-2 list-inside list-disc space-y-1.5 marker:text-indigo-500">
+              <li>
+                訂閱內容只存在<strong>你這台裝置的瀏覽器</strong>（localStorage），
+                <strong>沒有登入帳號</strong>。
+              </li>
+              <li>
+                應用程式本身<strong>不會把你的訂閱清單上傳到我們的資料庫</strong>；主機僅提供網頁與程式檔（與一般網站相同可能會有連線紀錄，但不包含你的清單內容）。
+              </li>
+              <li>
+                若你<strong>清除網站資料</strong>、換瀏覽器或換手機，資料不會跟著轉移，需自行重新輸入。
+              </li>
+            </ul>
+          </section>
+          <section>
+            <h3 className="font-bold text-slate-900">當成 App 使用</h3>
+            <p className="mt-2">
+              用 Chrome、Edge 或 Safari 可將 Subtrack{" "}
+              <strong>加到主畫面</strong>
+              ，以全螢幕方式開啟；離線時能否瀏覽視瀏覽器快取而定。
+            </p>
+          </section>
+          <section>
+            <h3 className="font-bold text-slate-900">意見與回報</h3>
+            {moreInfoUrl ? (
+              <p className="mt-2">
+                若有問題或建議，可透過下方連結與我們聯繫（連結由站方設定，不含開發者個人帳號頁）。
+              </p>
+            ) : (
+              <p className="mt-2">
+                本站未列出對外聯絡網址。若你是透過他人分享使用，可向對方反映使用狀況。
+              </p>
+            )}
+          </section>
+        </div>
+
+        <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-end">
+          {moreInfoUrl ? (
+            <a
+              href={moreInfoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex justify-center rounded-full border border-slate-200 bg-white px-5 py-2.5 text-center text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              更多資訊
+            </a>
+          ) : null}
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:from-indigo-600 hover:to-purple-600"
+          >
+            我知道了
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
