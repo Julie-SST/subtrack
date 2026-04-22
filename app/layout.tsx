@@ -23,8 +23,12 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
   },
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
-    shortcut: "/icon.svg",
+    icon: [
+      { url: "/pwa-icon-192", sizes: "192x192", type: "image/png" },
+      { url: "/pwa-icon-512", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/pwa-icon-192",
+    apple: "/apple-icon",
   },
   formatDetection: {
     telephone: false,

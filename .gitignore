@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# service worker（由 scripts/generate-sw.mjs 產生）
+/public/sw.js
+
 # production
 /build
 

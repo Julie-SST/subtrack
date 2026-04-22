@@ -15,16 +15,44 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ["finance", "productivity", "utilities"],
     icons: [
       {
-        src: "/icon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
-        purpose: "any maskable",
+        src: "/pwa-icon-192",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/pwa-icon-512",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/pwa-icon-512",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
       },
       {
         src: "/apple-icon",
         sizes: "180x180",
         type: "image/png",
         purpose: "any",
+      },
+    ],
+    screenshots: [
+      {
+        src: "/pwa-screenshot-wide",
+        sizes: "1280x720",
+        type: "image/png",
+        form_factor: "wide",
+        label: "桌面版：訂閱總覽與分類統計",
+      },
+      {
+        src: "/pwa-screenshot-narrow",
+        sizes: "390x844",
+        type: "image/png",
+        form_factor: "narrow",
+        label: "手機版：隨時查看下次扣款與月支出",
       },
     ],
   };

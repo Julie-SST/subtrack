@@ -1,4 +1,10 @@
-const VERSION = "subtrack-v1";
+/**
+ * Service worker 模板：請編輯此檔，不要直接改 public/sw.js。
+ * 實際檔案由 scripts/generate-sw.mjs 在 prebuild / predev 時寫入。
+ *
+ * __SW_BUILD_ID__ 會被替換成每次建置唯一的 VERSION（見 generate-sw.mjs）。
+ */
+const VERSION = "__SW_BUILD_ID__";
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 const OFFLINE_URL = "/";
 
