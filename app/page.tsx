@@ -27,28 +27,32 @@ const CATEGORY_STYLES: Record<
   { badge: string; dot: string; ring: string; soft: string; hex: string }
 > = {
   娛樂: {
-    badge: "bg-rose-100 text-rose-700 border-rose-200",
+    badge:
+      "whitespace-nowrap bg-rose-100 text-rose-700 border-rose-200",
     dot: "bg-rose-500",
     ring: "ring-rose-300",
     soft: "bg-rose-50",
     hex: "#f43f5e",
   },
   音樂: {
-    badge: "bg-purple-100 text-purple-700 border-purple-200",
+    badge:
+      "whitespace-nowrap bg-purple-100 text-purple-700 border-purple-200",
     dot: "bg-purple-500",
     ring: "ring-purple-300",
     soft: "bg-purple-50",
     hex: "#a855f7",
   },
   工作: {
-    badge: "bg-blue-100 text-blue-700 border-blue-200",
+    badge:
+      "whitespace-nowrap bg-blue-100 text-blue-700 border-blue-200",
     dot: "bg-blue-500",
     ring: "ring-blue-300",
     soft: "bg-blue-50",
     hex: "#3b82f6",
   },
   健康: {
-    badge: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    badge:
+      "whitespace-nowrap bg-emerald-100 text-emerald-700 border-emerald-200",
     dot: "bg-emerald-500",
     ring: "ring-emerald-300",
     soft: "bg-emerald-50",
@@ -361,14 +365,15 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-4 flex max-w-full flex-nowrap gap-2 overflow-x-auto overscroll-x-contain pb-1 [-webkit-overflow-scrolling:touch]">
                 {FILTERS.map((f) => {
                   const active = filter === f;
                   return (
                     <button
                       key={f}
+                      type="button"
                       onClick={() => setFilter(f)}
-                      className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+                      className={`shrink-0 whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition ${
                         active
                           ? "bg-slate-900 text-white shadow-sm"
                           : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -601,7 +606,7 @@ function SubscriptionRow({
         <div className="flex items-center gap-2">
           <p className="truncate font-semibold text-slate-900">{sub.name}</p>
           <span
-            className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${styles.badge}`}
+            className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${styles.badge}`}
           >
             <span className={`h-1.5 w-1.5 rounded-full ${styles.dot}`} />
             {sub.category}
