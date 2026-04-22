@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 type Category = "娛樂" | "音樂" | "工作" | "健康";
-type Cycle = "月" | "年";
+type Cycle = "月" | "季" | "年";
 
 type Subscription = {
   id: string;
@@ -91,6 +91,20 @@ function formatChineseDate(dateStr: string): string {
   return `${d.getMonth() + 1}月${d.getDate()}日`;
 }
 
+/** 換算成每月約當金額（列表與圖表用） */
+function monthlyEquivalent(s: Pick<Subscription, "amount" | "cycle">): number {
+  if (s.cycle === "月") return s.amount;
+  if (s.cycle === "季") return s.amount / 3;
+  return s.amount / 12;
+}
+
+/** 換算成每年約當金額（年支出卡用） */
+function yearlyEquivalent(s: Pick<Subscription, "amount" | "cycle">): number {
+  if (s.cycle === "年") return s.amount;
+  if (s.cycle === "季") return s.amount * 4;
+  return s.amount * 12;
+}
+
 function buildDefaultSubs(): Subscription[] {
   const today = new Date();
   return [
@@ -136,7 +150,7 @@ function isSubscription(v: unknown): v is Subscription {
     typeof o.id === "string" &&
     typeof o.name === "string" &&
     typeof o.amount === "number" &&
-    (o.cycle === "月" || o.cycle === "年") &&
+    (o.cycle === "月" || o.cycle === "季" || o.cycle === "年") &&
     typeof o.nextBillingDate === "string" &&
     CATEGORIES.includes(o.category as Category)
   );
@@ -185,19 +199,11 @@ export default function Home() {
   const modalOpen = isAdding || editingSub !== null;
 
   const monthlyTotal = useMemo(
-    () =>
-      subs.reduce(
-        (sum, s) => sum + (s.cycle === "月" ? s.amount : s.amount / 12),
-        0
-      ),
+    () => subs.reduce((sum, s) => sum + monthlyEquivalent(s), 0),
     [subs]
   );
   const yearlyTotal = useMemo(
-    () =>
-      subs.reduce(
-        (sum, s) => sum + (s.cycle === "年" ? s.amount : s.amount * 12),
-        0
-      ),
+    () => subs.reduce((sum, s) => sum + yearlyEquivalent(s), 0),
     [subs]
   );
   const nextBilling = useMemo(() => {
@@ -232,8 +238,7 @@ export default function Home() {
       健康: 0,
     };
     for (const s of subs) {
-      const monthly = s.cycle === "月" ? s.amount : s.amount / 12;
-      totals[s.category] += monthly;
+      totals[s.category] += monthlyEquivalent(s);
     }
     const total = Object.values(totals).reduce((a, b) => a + b, 0);
     return { totals, total };
@@ -1080,15 +1085,15 @@ function SubscriptionModal({
               />
             </Field>
             <Field label="週期">
-              <div className="flex gap-2">
-                {(["月", "年"] as Cycle[]).map((c) => {
+              <div className="grid grid-cols-3 gap-1.5">
+                {(["月", "季", "年"] as Cycle[]).map((c) => {
                   const active = cycle === c;
                   return (
                     <button
                       type="button"
                       key={c}
                       onClick={() => setCycle(c)}
-                      className={`flex-1 rounded-xl border px-3 py-2 text-sm font-medium transition ${
+                      className={`rounded-xl border px-2 py-2 text-sm font-medium transition sm:px-3 ${
                         active
                           ? "border-transparent bg-slate-900 text-white shadow-sm"
                           : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
