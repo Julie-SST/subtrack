@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import FeedbackFab from "../components/FeedbackFab";
 import PwaRegister from "../components/PwaRegister";
 
 const geistSans = Geist({
@@ -58,6 +59,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900">
         {children}
+        <FeedbackFab />
         <PwaRegister />
       </body>
     </html>

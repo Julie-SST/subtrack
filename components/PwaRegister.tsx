@@ -104,7 +104,7 @@ export default function PwaRegister() {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-x-4 bottom-4 z-40 mx-auto max-w-md rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-slate-200 sm:inset-x-auto sm:right-4">
+    <div className="fixed inset-x-4 bottom-4 z-30 mx-auto max-w-md rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-slate-200 sm:inset-x-auto sm:right-4">
       <div className="flex items-start gap-3">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-xl shadow-lg shadow-indigo-200">
           <span>💳</span>
